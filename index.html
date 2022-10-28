@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PeepoBitcoin</title>
+    <!-- CHART JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.0.2/chart.min.js"></script>
+    <!-- BOOTSTRAP -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="bitcoin.png" />
+    <!-- VUE -->
+    <script src="https://unpkg.com/vue@next" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <section id="vue-mount">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <h1 class="display-1 my-3 text-center">
+              <img
+                class="pb-2 pb-sm-3"
+                src="bitcoin.png"
+                :height="logoHeight"
+                alt="bitcoin"
+              />
+              <span> PeepoBitcoin</span>
+            </h1>
+            <button
+              class="btn"
+              :class="{'btn-dark': isUpdated, 'btn-warning': !isUpdated}"
+              @click="getCurrentPrice"
+            >
+              Update
+            </button>
+            <span class="px-2">{{updateStatus}}</span>
+          </div>
+        </div>
+
+        <!-- DATA ROW -->
+        <div class="row mb-3">
+          <!-- LEFT COLUMN -->
+          <div class="col-sm-6">
+            <div class="card text-center purple-card">
+              <div class="card-header">Initial Investment</div>
+
+              <div class="card-body">
+                <div class="input-group">
+                  <span class="input-group-text">I invested</span>
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    class="form-control"
+                    v-model="initialAmount"
+                    @input="isUpdated = false"
+                  />
+                </div>
+                <div class="input-group">
+                  <span class="input-group-text">to buy</span>
+                  <input
+                    type="number"
+                    step="any"
+                    class="form-control"
+                    v-model="btcBought"
+                    @input="isUpdated = false"
+                  />
+                  <span class="input-group-text">bitcoins</span>
+                </div>
+
+                <!-- <h1 class="card-title">${{initialAmount}}</h1>
+                <p class="card-text">
+                  You bought {{btcBought}} bitcoins on 13 Apr 2021.
+                </p> -->
+              </div>
+            </div>
+
+            <div class="card text-center earnings-card">
+              <div class="card-header">Current Amount</div>
+              <div class="card-body">
+                <h1
+                  class="card-title"
+                  :class="{'text-success': totalReturns >= 0, 'text-danger': totalReturns < 0}"
+                >
+                  ${{currentAmountFormatted}}
+                </h1>
+                <p class="card-text">
+                  Your {{btcBought}} bitcoins can be sold for this amount now.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN -->
+          <div class="col-sm-6">
+            <div class="card text-center bg-warning">
+              <div class="card-header">Current Price of BTC</div>
+              <div class="card-body">
+                <h1 class="card-title">${{currentPriceFormatted}}</h1>
+                <p class="card-text">Updated on {{timeUpdated}}</p>
+              </div>
+            </div>
+
+            <div class="card text-center earnings-card">
+              <div class="card-header">Total Returns</div>
+              <div class="card-body">
+                <h1
+                  class="card-title"
+                  :class="{'text-success': totalReturns >= 0, 'text-danger': totalReturns < 0}"
+                >
+                  {{totalReturnsSign}}${{totalReturnsFormatted}}
+                </h1>
+                <p class="card-text">
+                  {{percentageReturnsFormatted}}% {{gainOrLoss}}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHART ROW -->
+        <div class="row mb-3">
+          <div class="col">
+            <h2>Chart</h2>
+            <button class="btn btn-dark" @click="updateChart">
+              Update Chart
+            </button>
+            <canvas id="myChart" :height="chartHeignt"></canvas>
+          </div>
+        </div>
+
+        <!-- DATA ROW -->
+        <div class="row mb-5">
+          <div class="col">
+            <h2>Data</h2>
+            <p>
+              <span>All data is taken from </span>
+              <a target="_blank" href="https://www.coindesk.com/price/bitcoin">
+                CoinDesk
+              </a>
+            </p>
+            <p>1 USD is {{currentRateFormatted}} SGD as of current time.</p>
+            <ul class="list-group">
+              <li
+                class="list-group-item my-list-item"
+                v-for="(value, key) in history"
+              >
+                {{key}} : USD {{value}} : SGD {{value*currentRate}}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- END OF ROWS -->
+      </div>
+    </section>
+
+    <footer class="fixed-bottom my-footer">
+      <div class="container text-white pb-1">
+        <small>Copyright © 2021 zschuah. All Rights Reserved.</small>
+      </div>
+    </footer>
+  </body>
+</html>

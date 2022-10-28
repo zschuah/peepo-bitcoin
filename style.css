@@ -1,0 +1,28 @@
+body {
+  background: rgba(0, 0, 128, 0.2);
+}
+
+.purple-card {
+  background: navy;
+  color: white;
+}
+.yellow-card {
+  background: yellow;
+}
+.earnings-card {
+  /* Dark Sienna */
+  /* background: #330f0a; */
+  background: lightgrey;
+  color: black;
+}
+
+.my-list-item {
+  background: navy;
+  color: white;
+}
+
+.my-footer {
+  background: navy;
+  color: white;
+  text-align: right;
+}
