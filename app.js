@@ -8,10 +8,13 @@ const app = Vue.createApp({
       currentAmount: 0,
       currentPrice: 0,
       currentRate: 0,
+      currentPriceUrl: "https://api.coindesk.com/v1/bpi/currentprice/SGD.json",
 
       history: {},
       timeUpdated: "",
       isoTime: "",
+      historicalPriceUrl:
+        "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=USD&days=30&interval=daily",
 
       chartLabels: [1, 2, 3, 4, 5, 6, 7],
       chartPoints: [65, 59, 80, 81, 56, 55, 40],
@@ -109,11 +112,16 @@ const app = Vue.createApp({
     slotDataIntoChart() {
       this.chartLabels = [];
       this.chartPoints = [];
-      for (let key in this.history) {
-        // console.log(key, this.history[key]);
-        this.chartLabels.push(key);
-        this.chartPoints.push(this.history[key] * this.currentRate);
+      //SETUP data points from CoinGecko
+      for (let item of this.history) {
+        // console.log(item);
+        this.chartLabels.push(item[0]);
+        this.chartPoints.push(item[1] * this.currentRate);
       }
+
+      //REPLACE last element(s) with the one from CoinDesk
+      this.chartLabels.splice(this.chartLabels.length - 2, 2);
+      this.chartPoints.splice(this.chartLabels.length - 2, 2);
       // console.log(this.isoTime.substring(0, 10));
       // console.log(this.currentPrice);
       this.chartLabels.push(this.isoTime.substring(0, 10));
@@ -128,13 +136,20 @@ const app = Vue.createApp({
         options: this.chartOptions,
       });
     },
+    convertJsonDataToChartData(data) {
+      let tempArray = data.prices;
+      tempArray.forEach((item) => {
+        item[0] = new Date(item[0]).toISOString().substring(0, 10);
+      });
+      this.history = tempArray;
+    },
     updateChart() {
       // location.reload();
-      fetch("https://api.coindesk.com/v1/bpi/historical/close.json")
+      fetch(this.historicalPriceUrl)
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          this.history = data.bpi;
+          this.convertJsonDataToChartData(data);
         })
         .then(() => {
           this.slotDataIntoChart();
@@ -144,7 +159,7 @@ const app = Vue.createApp({
         });
     },
     getCurrentPrice() {
-      fetch("https://api.coindesk.com/v1/bpi/currentprice/SGD.json")
+      fetch(this.currentPriceUrl)
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
@@ -160,6 +175,23 @@ const app = Vue.createApp({
       localStorage.setItem("myInitial", this.initialAmount);
       localStorage.setItem("myBtc", this.btcBought);
       this.isUpdated = true;
+    },
+  },
+  watch: {
+    //Whenever currentPrice changes, this function will run
+    currentPrice(newPrice, oldPrice) {
+      if (oldPrice === 0) {
+        //This method provides chart data
+        fetch(this.historicalPriceUrl)
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            this.convertJsonDataToChartData(data);
+          })
+          .then(() => {
+            this.createChart();
+          });
+      }
     },
   },
   mounted() {
@@ -185,16 +217,24 @@ const app = Vue.createApp({
     Good luck, future Zhun Song!
     */
 
+    /* Note 28 Oct 2022:
+    Hello there, future Zhun Song here!
+    You were right in assessing that the getCurrentPrice needs to be called first.
+    Async/Await would make sense for React, but this is Vue. You can simply use
+    watch and watch for changes in the old value and update accordingly.
+    I've implemented the updates!
+    */
+
     //This method provides chart data
-    fetch("https://api.coindesk.com/v1/bpi/historical/close.json")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        this.history = data.bpi;
-      })
-      .then(() => {
-        this.createChart();
-      });
+    // fetch(this.historicalPriceUrl)
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     console.log(data);
+    //     this.convertJsonDataToChartData(data);
+    //   })
+    //   .then(() => {
+    //     this.createChart();
+    //   });
   },
 });
 

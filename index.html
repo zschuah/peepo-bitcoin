@@ -34,6 +34,7 @@
               />
               <span> PeepoBitcoin</span>
             </h1>
+            <p class="text-center fst-italic">All prices stated are in SGD</p>
             <button
               class="btn"
               :class="{'btn-dark': isUpdated, 'btn-warning': !isUpdated}"
@@ -141,19 +142,12 @@
         <div class="row mb-5">
           <div class="col">
             <h2>Data</h2>
-            <p>
-              <span>All data is taken from </span>
-              <a target="_blank" href="https://www.coindesk.com/price/bitcoin">
-                CoinDesk
-              </a>
-            </p>
+            <p>Current Price data taken from CoinDesk API.</p>
+            <p>Historical Prices data taken from CoinGecko API.</p>
             <p>1 USD is {{currentRateFormatted}} SGD as of current time.</p>
             <ul class="list-group">
-              <li
-                class="list-group-item my-list-item"
-                v-for="(value, key) in history"
-              >
-                {{key}} : USD {{value}} : SGD {{value*currentRate}}
+              <li class="list-group-item my-list-item" v-for="item in history">
+                {{item[0]}} : USD {{item[1]}} : SGD {{item[1]*currentRate}}
               </li>
             </ul>
           </div>
@@ -165,7 +159,7 @@
 
     <footer class="fixed-bottom my-footer">
       <div class="container text-white pb-1">
-        <small>Copyright © 2021 zschuah. All Rights Reserved.</small>
+        <small>Copyright © 2022 zschuah. All Rights Reserved.</small>
       </div>
     </footer>
   </body>
