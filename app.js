@@ -1,5 +1,10 @@
 let mainChart;
 
+const CURRENT_PRICE_URL =
+  "https://api.coindesk.com/v1/bpi/currentprice/SGD.json";
+const HISTORICAL_PRICE_URL =
+  "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=USD&days=30&interval=daily";
+
 const app = Vue.createApp({
   data() {
     return {
@@ -8,13 +13,12 @@ const app = Vue.createApp({
       currentAmount: 0,
       currentPrice: 0,
       currentRate: 0,
-      currentPriceUrl: "https://api.coindesk.com/v1/bpi/currentprice/SGD.json",
+      currentPriceUrl: CURRENT_PRICE_URL,
 
       history: {},
       timeUpdated: "",
       isoTime: "",
-      historicalPriceUrl:
-        "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=USD&days=30&interval=daily",
+      historicalPriceUrl: HISTORICAL_PRICE_URL,
 
       chartLabels: [1, 2, 3, 4, 5, 6, 7],
       chartPoints: [65, 59, 80, 81, 56, 55, 40],
@@ -136,6 +140,10 @@ const app = Vue.createApp({
         options: this.chartOptions,
       });
     },
+    /**
+     * ORIGINAL DATA: [1678320000000, 21712.65119391273]
+     * MODIFIED DATA: ['2023-03-09', 21712.65119391273]
+     */
     convertJsonDataToChartData(data) {
       let tempArray = data.prices;
       tempArray.forEach((item) => {
