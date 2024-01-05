@@ -1,9 +1,9 @@
 let mainChart;
 
 const CURRENT_PRICE_URL =
-  "https://api.coindesk.com/v1/bpi/currentprice/SGD.json";
+  "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=SGD&precision=3";
 const HISTORICAL_PRICE_URL =
-  "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=USD&days=30&interval=daily";
+  "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=SGD&days=30&interval=daily";
 
 const app = Vue.createApp({
   data() {
@@ -16,8 +16,8 @@ const app = Vue.createApp({
       currentPriceUrl: CURRENT_PRICE_URL,
 
       history: {},
-      timeUpdated: "",
-      isoTime: "",
+      timeUpdated: new Date(),
+      isoTime: new Date().toISOString(),
       historicalPriceUrl: HISTORICAL_PRICE_URL,
 
       chartLabels: [1, 2, 3, 4, 5, 6, 7],
@@ -94,9 +94,6 @@ const app = Vue.createApp({
     currentAmountFormatted() {
       return this.formatNumberDP(this.currentAmount, 2);
     },
-    currentRateFormatted() {
-      return this.formatNumberDP(this.currentRate, 5);
-    },
     updateStatus() {
       return this.isUpdated ? "Updated!" : "Update to save changes.";
     },
@@ -120,12 +117,12 @@ const app = Vue.createApp({
       for (let item of this.history) {
         // console.log(item);
         this.chartLabels.push(item[0]);
-        this.chartPoints.push(item[1] * this.currentRate);
+        this.chartPoints.push(item[1]);
       }
 
       //REPLACE last element(s) with the one from CoinDesk
-      this.chartLabels.splice(this.chartLabels.length - 2, 2);
-      this.chartPoints.splice(this.chartLabels.length - 2, 2);
+      this.chartLabels.splice(-2);
+      this.chartPoints.splice(-2);
       // console.log(this.isoTime.substring(0, 10));
       // console.log(this.currentPrice);
       this.chartLabels.push(this.isoTime.substring(0, 10));
@@ -171,13 +168,9 @@ const app = Vue.createApp({
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-
-          this.currentRate = data.bpi.SGD.rate_float / data.bpi.USD.rate_float;
-          this.currentPrice = data.bpi.SGD.rate_float;
+          this.currentPrice = data.bitcoin.sgd;
           this.currentAmount = this.currentPrice * this.btcBought;
-
-          this.isoTime = data.time.updatedISO;
-          this.timeUpdated = new Date(this.isoTime).toString();
+          this.timeUpdated = new Date();
         });
 
       localStorage.setItem("myInitial", this.initialAmount);
@@ -247,3 +240,7 @@ const app = Vue.createApp({
 });
 
 app.mount("#vue-mount");
+
+// To unhide section after script is loaded
+const section = document.querySelector("section");
+section.hidden = false;

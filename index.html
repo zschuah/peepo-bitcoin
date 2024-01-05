@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="bitcoin.png" />
     <!-- VUE -->
-    <script src="https://unpkg.com/vue@next" defer></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="app.js" defer></script>
   </head>
   <body>
@@ -142,12 +142,12 @@
         <div class="row mb-5">
           <div class="col">
             <h2>Data</h2>
-            <p>Current Price data taken from CoinDesk API.</p>
+            <p>Current Price data taken from CoinGecko API.</p>
             <p>Historical Prices data taken from CoinGecko API.</p>
-            <p>1 USD is {{currentRateFormatted}} SGD as of current time.</p>
+
             <ul class="list-group">
               <li class="list-group-item my-list-item" v-for="item in history">
-                {{item[0]}} : USD {{item[1]}} : SGD {{item[1]*currentRate}}
+                {{item[0]}} : SGD {{item[1]}}
               </li>
             </ul>
           </div>
